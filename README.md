@@ -1,15 +1,14 @@
 # Tools to find very large inversions.
 
-## 1- Identify large inversions on fasta files based on mapping of unique k-mers. Generates a dotplot of the alignments. 
+### 1- Identify large inversions on fasta files based on mapping of unique k-mers. Generates a dotplot of the alignments. 
 Requires  FastK, bwa, R.
 ```
 ./kinv.sh \
         -1 [First fasta file] \
         -2 [Second fasta file] \
-
 ```
 
-## 2- Detect inversions between two paths of a GFA file. Generates two bed files with the coordinates of the inversions for each path.  
+### 2- Detect inversions between two paths of a GFA file. Generates two bed files with the coordinates of the inversions for each path.  
 Requires R.
 
 ```
