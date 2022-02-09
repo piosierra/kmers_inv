@@ -200,5 +200,5 @@ mv *.png $cwd
 
 cd $cwd
 
-# rm -r $output_folder
+rm -r $output_folder
 
