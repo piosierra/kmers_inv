@@ -1,5 +1,10 @@
 #!/usr/bin/env Rscript
 
+#
+# Script to detect inversions on two paths of a gfa file.
+# Generates two bed files with the results, one for each path.
+#
+
 library(data.table)
 library(stringi)
 library(intervals)
@@ -26,12 +31,10 @@ if ( is.null(opt$gfa) ) {
   print("-gfa missing")
   q(status=1)
 }
-
 if ( is.null(opt$a_path) ) {
   print("-a_path missing")
   q(status=1)
 }
-
 if ( is.null(opt$b_path) ) {
   print("-b_path missing")
   q(status=1)
@@ -45,7 +48,6 @@ if (is.null(opt$min_per_inv)) {
 if (is.null(opt$min_size_inv)) {
   opt$min_size_inv    = 50
 }
-
 
 min_inv_per <- opt$min_per_inv
 min_inv_size <- opt$min_size_inv
@@ -91,7 +93,6 @@ t2 <- fread("path_2", skip = 1)
 s <- fread("segments")
 
 # removes end node (*)
-
 t1 <- t1[-nrow(t1), ]
 t2 <- t2[-nrow(t2), ]
 
@@ -132,15 +133,11 @@ t1_coord <-
   data.table(start = sapply(t1_clus, head, 1),
              end = sapply(t1_clus, tail, 1))
 
-
 # Getting length of segments
-
 s[, l := nchar(s$V3)]
 
 # Generating segment var to get lengths on paths
-
 t1[, sega := as.numeric(stri_sub(seg, 1, -2))]
-
 t2[, sega := as.numeric(stri_sub(seg, 1, -2))]
 
 #  get length of segments on paths tables
@@ -150,9 +147,8 @@ setkey(t2, sega)
 t1[s, len := l]
 t2[s, len2 := l]
 
-print("Obtaining coordinates for path 1...")
-
 # Get coordinates of segments on paths tables
+print("Obtaining coordinates for path 1...")
 
 setkey(t1, pos)
 setkey(t2, pos2)
@@ -162,7 +158,6 @@ t2$end2 <- cumsum(t2$len2)
 t2$start2 <- 1 + t2$end2 - t2$len2
 
 # Add coordinates to inversions table
-
 setkey(t1_coord, start)
 t1_coord[t1, s := start]
 setkey(t1_coord, end)
@@ -179,7 +174,6 @@ print(
 )
 
 # Loop to merge inversions closer than x% of the size
-
 t1_merged <- data.table(start = integer(), end = integer())
 current <- c(t1_coord[1]$s, t1_coord[1]$e)
 current_l <- t1_coord[1]$l
@@ -197,7 +191,6 @@ for (i in 2:nrow(t1_coord)) {
     current_i <- current_i + t1_coord[i]$l
     current[2] <- t1_coord[i]$e
   }
-  
 }
 t1_merged <-
   rbindlist(list(t1_merged, data.table(start = current[1], end = current[2])))
@@ -206,12 +199,10 @@ t1_merged <-
 t1_merged[, l := 1 + end - start]
 
 # Filter by min inversion size
-
-
 t1_merged <- t1_merged[l > min_inv_size]
 
-print("Obtaining coordinates for path 1...")
 # Obtain coordinates on path 2. pos1 -> seg -> pos2 -> coord2
+print("Obtaining coordinates for path 1...")
 
 setkey(t1_merged, start)
 setkey(t1_coord, s)
@@ -233,7 +224,6 @@ t1_merged[t2, start2 := start2]
 t1_merged[, l2 := 1 + end2 - start2]
 
 # Write bed files
-
 print("Writing bed files...")
 
 b1 <-
@@ -241,12 +231,14 @@ b1 <-
              start = t1_merged$start - 1,
              end = t1_merged$end)
 b1[, name := paste("inv_", rownames(b1), sep = "")]
+setkey(b1, start)
 
 b2 <-
   data.table(chr = opt$chr,
              start = t1_merged$start2 - 1,
              end = t1_merged$end2)
 b2[, name := paste("inv_", rownames(b2), sep = "")]
+setkey(b2, start)
 
 fwrite(b1,
        paste("inversions_", opt$a_path, sep = ""),
