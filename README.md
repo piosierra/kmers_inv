@@ -1,4 +1,4 @@
-# Tools to find very large inversions.
+# Identifying very large inversions in full genomes.
 
 ### 1- Identify large inversions on fasta files based on mapping of unique k-mers. Generates a dotplot of the alignments. 
 Requires  FastK, bwa, R.

@@ -241,10 +241,10 @@ b2[, name := paste("inv_", rownames(b2), sep = "")]
 setkey(b2, start)
 
 fwrite(b1,
-       paste("inversions_", opt$a_path, sep = ""),
+       paste("inversions_", opt$a_path, "_vs_", opt$b_path, sep = ""),
        sep = "\t",
        col.names = FALSE)
 fwrite(b2,
-       paste("inversions_", opt$b_path, sep = ""),
+       paste("inversions_", opt$b_path, "_vs_", opt$a_path, sep = ""),
        sep = "\t",
        col.names = FALSE)
