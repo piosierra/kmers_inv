@@ -54,10 +54,12 @@ then
 fi
 
 mkdir -p $output_folder
+mkdir -p temppp
+
 cd $output_folder
 
-gs1="${g1%.fa}"  # Removes .fa
-gs2="${g2%.fa}"
+gs1="${g1%.f*}"  # Removes .fa
+gs2="${g2%.f*}"
 name1="${gs1##*/}"  # Removes path until filename
 name2="${gs2##*/}"
 
@@ -73,7 +75,7 @@ echo
 if ! [[ -f "$name1"_all ]]; then
         cd $cwd
         echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==> Extracting kmers for $name1"
-        FastK -k31 -t1 $g1
+        FastK -k31 -t1 -Ptemppp $g1
         Symmex "$gs1".ktab "$gs1"_2.ktab
         Tabex "$gs1"_2.ktab LIST > "$cwd"/"$output_folder"/"$name1"_all
         cd $output_folder
@@ -84,7 +86,7 @@ fi
 if ! [[ -f "$name2"_all ]]; then
         cd $cwd
         echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==> Extracting kmers  for $name2"
-        FastK -k31 -t1 $g2
+        FastK -k31 -t1 -Ptemppp $g2
         Symmex "$gs2".ktab "$gs2"_2.ktab
         Tabex "$gs2"_2.ktab LIST > "$cwd"/"$output_folder"/"$name2"_all
         cd $output_folder
@@ -200,5 +202,6 @@ mv *.png $cwd
 
 cd $cwd
 
+rm -r temppp
 rm -r $output_folder
 
