@@ -9,7 +9,7 @@ echo
 SECONDS=0
 g1=false
 g2=false
-output_folder=temp
+output_folder=ptemp
 sample_size=100000
 show_help=false 
 
@@ -56,8 +56,6 @@ fi
 mkdir -p $output_folder
 mkdir -p temppp
 
-cd $output_folder
-
 gs1="${g1%.f*}"  # Removes .fa
 gs2="${g2%.f*}"
 name1="${gs1##*/}"  # Removes path until filename
@@ -71,25 +69,23 @@ echo "==> Output folder: $output_folder"
 echo
 echo "=================================================="
 echo
-
+cd $output_folder
+echo $(pwd)
 if ! [[ -f "$name1"_all ]]; then
-        cd $cwd
         echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==> Extracting kmers for $name1"
         FastK -k31 -t1 -Ptemppp $g1
         Symmex "$gs1".ktab "$gs1"_2.ktab
         Tabex "$gs1"_2.ktab LIST > "$cwd"/"$output_folder"/"$name1"_all
-        cd $output_folder
+
 else
     echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==> Found kmers for $name1"
 fi
 
 if ! [[ -f "$name2"_all ]]; then
-        cd $cwd
         echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==> Extracting kmers  for $name2"
         FastK -k31 -t1 -Ptemppp $g2
         Symmex "$gs2".ktab "$gs2"_2.ktab
         Tabex "$gs2"_2.ktab LIST > "$cwd"/"$output_folder"/"$name2"_all
-        cd $output_folder
 else
     echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==> Found kmers for $name2"
 fi
@@ -104,9 +100,9 @@ if ! [[ -f "$name2"_all_unique ]]; then
 awk -F" " '{if ($4 == 1) print $2}' "$name2"_all > "$name2"_all_unique
 fi
 
+echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==> Getting kmers common to both samples"
 if ! [[ -f unique_kmers_"$name1"_"$name2" ]]; then
-    echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==> Getting kmers common to both samples"
-    comm -12 <( sort "$name1"_all_unique ) <( sort "$name2"_all_unique ) > unique_kmers_"$name1"_"$name2"
+    comm -12 "$name1"_all_unique "$name2"_all_unique > unique_kmers_"$name1"_"$name2"
 fi
 
 echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==> Sampling $sample kmers"
@@ -192,7 +188,7 @@ echo -e "$(($SECONDS / 3600)):$(($SECONDS / 60)):$(($SECONDS % 60))\t ==>  Remov
 awk '{print $1 "\t" $3 "\t" $9}' unique_kmers_"$name1"_"$name2"_final_clean.sam \
     | sort -k2 -n > unique_kmers_"$name1"_"$name2"_final_clean_table
 
-
+# Plot the results
 Rscript ../inv_viz.R unique_kmers_"$name1"_"$name2"_final_clean_table \
     unique_kmers_"$name1"_"$name2"_sample_aligned_headless_clean_table \
     "$name1" \

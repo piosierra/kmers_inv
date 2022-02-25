@@ -7,7 +7,6 @@ library(Biostrings)
 
 args = commandArgs(trailingOnly=TRUE)
 
-
 t1 <- fread(args[1])
 colnames(t1) <- c("flag1", "pos1", "seq")
 t2 <- fread(args[2])
