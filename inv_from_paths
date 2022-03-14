@@ -202,7 +202,7 @@ t1_merged[, l := 1 + end - start]
 t1_merged <- t1_merged[l > min_inv_size]
 
 # Obtain coordinates on path 2. pos1 -> seg -> pos2 -> coord2
-print("Obtaining coordinates for path 1...")
+print("Obtaining coordinates for path 2...")
 
 setkey(t1_merged, start)
 setkey(t1_coord, s)

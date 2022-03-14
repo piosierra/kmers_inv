@@ -21,10 +21,4 @@ Requires R.
         -s [:optional: min size of inversion :def=50:]
 ```
 
-```
-sbatch ./inv_from_paths \
-        -g ../../graphs/output_GCF6_X_s100000_p90_g30004000_k30/GCF6_X.fa.gz.a944863.f043790.61cf8a6.smooth.fix.gfa \
-        -a idAnoGambDA_150_04-X \
-        -b idAnoColuKW18_c001-X \
-        -c X
-```
+
