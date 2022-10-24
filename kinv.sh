@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Requires absolute paths for the files (TO FIX)
+
 # Stop at any error
 set -eo pipefail
 
